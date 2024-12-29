@@ -19,5 +19,5 @@ export async function POST(req:NextRequest,res:NextResponse) {
   //   }
   // }
   // console.log(result)
-  return NextResponse.json(result);
+  return NextResponse.json(result.slice(0,10));
 }
