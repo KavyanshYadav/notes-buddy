@@ -4,6 +4,7 @@ import { TableOfContents } from "./TableOfContents";
 import { Callout } from "./callout";
 import { UnitPagination } from "./unit-pagination";
 import { isPaginationDisabled } from "@/utils/pagination-config";
+import ContextMenu from "./ContextMenu";
 
 const useMDXComponent = (code: string) => {
   const fn = new Function(code);
@@ -27,12 +28,15 @@ export function MDXContent({ code, currentUnit, totalUnits, slug }: MdxProps) {
   const showUnitPagination = !isPaginationDisabled(slug);
 
   return (
-    <div>
+    <div className="relative">
+      <ContextMenu/>
       {/* Table of Contents */}
       <TableOfContents code={code} />
 
       {/* Main Content */}
-      <Component components={components} />
+      <div className="NotesContainer relative">
+        <Component  components={components} />
+      </div>
       {showUnitPagination && currentUnit && totalUnits ? (
         <UnitPagination
           currentUnit={currentUnit}

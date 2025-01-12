@@ -1,47 +1,72 @@
-"use client"
+'use client';
 
-import React, { useEffect, useState } from 'react'
+import React, { useEffect, useRef, useState } from 'react';
 
 function ContextMenu() {
-    const [leftClickMenu, setLeftClickMenu] = useState({ visible: false, x: 0, y: 0 });
+  const [selectedText, setSelectedText] = useState('');
+  const ContextMenuRef = useRef<HTMLDivElement>(null);
 
+  useEffect(() => {
+    const handleSelection = (event: MouseEvent) => {
+      const notesContainer = document.querySelector('.NotesContainer');
+      if (!notesContainer) return;
 
-    useEffect(() => {
-        // Close menus on outside click or ESC
-        const closeMenus = (e) => {
-          if (e.key === "Escape" || e.type === "mousedown") {
-            setLeftClickMenu({ visible: false, x: 0, y: 0 });
+      const selection = window.getSelection();
+      if (selection && selection.rangeCount > 0 && selection.toString().trim()) {
+        const range = selection.getRangeAt(0);
+        const commonAncestor = range.commonAncestorContainer;
+
+        if (notesContainer.contains(commonAncestor)) {
+          if (ContextMenuRef.current) {
+            ContextMenuRef.current.style.position = 'fixed';
+            ContextMenuRef.current.style.top = `${event.pageY}px`;
+            ContextMenuRef.current.style.left = `${event.pageX}px`;
+            ContextMenuRef.current.style.display = 'block';
           }
-        };
-    
-        window.addEventListener("mousedown", closeMenus);
-        window.addEventListener("keydown", closeMenus);
-    
-        return () => {
-          window.removeEventListener("mousedown", closeMenus);
-          window.removeEventListener("keydown", closeMenus);
-        };
-      }, []);
+          setSelectedText(selection.toString());
+        } else {
+          setSelectedText('');
+          if (ContextMenuRef.current) {
+            ContextMenuRef.current.style.display = 'none';
+          }
+        }
+      } else {
+        setSelectedText('');
+        if (ContextMenuRef.current) {
+          ContextMenuRef.current.style.display = 'none';
+        }
+      }
+    };
 
-      const handleLeftClick = (e) => {
-        e.preventDefault();
-        setLeftClickMenu({ visible: true, x: e.clientX, y: e.clientY });
-      };
+    const handleScroll = () => {
+      if (ContextMenuRef.current) {
+        ContextMenuRef.current.style.display = 'none';
+      }
+    };
+
+    document.addEventListener('mouseup', handleSelection);
+    window.addEventListener('scroll', handleScroll);
+
+    return () => {
+      document.removeEventListener('mouseup', handleSelection);
+      window.removeEventListener('scroll', handleScroll);
+    };
+  }, []);
+
   return (
-    <div>
-        {leftClickMenu.visible && (
-        <div
-          style={{ top: leftClickMenu.y, left: leftClickMenu.x }}
-          className="absolute bg-white shadow-lg rounded-md p-2 border border-gray-300 z-50"
-        >
-          <ul>
-            <li className="p-2 hover:bg-gray-200 cursor-pointer">Option 1</li>
-            <li className="p-2 hover:bg-gray-200 cursor-pointer">Option 2</li>
-          </ul>
-        </div>
-      )}
+    <div
+      ref={ContextMenuRef}
+      className="border border-input bg-background rounded-md shadow-lg p-1 z-10"
+      style={{ display: 'none' }}
+    >
+      <div className='flex flex-row gap-4'>
+        <div className='hover:bg-neutral-700 p-2'>Action 1</div>
+        <div className='hover:bg-neutral-700 p-2'>Action 2</div>
+        <div className='hover:bg-neutral-700 p-2'>Action 3</div>
+        <div className='hover:bg-neutral-700 p-2'>Action 4</div>
+      </div>
     </div>
-  )
+  );
 }
 
-export default ContextMenu
+export default ContextMenu;
