@@ -6,6 +6,7 @@ import { Metadata } from "next";
 import { siteConfig } from "@/config/site";
 import { Tag } from "@/components/tag";
 import ScrollProgress from "@/components/notes-ui/ScrollProcess";
+import LeftComponent from "@/components/notes-ui/LeftComponent";
 
 interface PostPageProps {
   params: {
@@ -84,26 +85,33 @@ export default async function PostPage({ params }: PostPageProps) {
   return (
     <>
       <ScrollProgress />
-      <article className="container py-6 prose dark:prose-invert max-w-3xl mx-auto">
-        <h1 className="mb-2">{post.title}</h1>
-        <div className="flex gap-2 mb-2">
-          {post.tags?.map((tag) => (
-            <Tag tag={tag} key={tag} />
-          ))}
+      <div className="flex w-full">
+        <div className="relative flex-[1]">
+          <LeftComponent/>
         </div>
-        {post.description && (
-          <p className="text-xl mt-0 text-muted-foreground">
-            {post.description}
-          </p>
-        )}
-        <hr className="my-4" />
-        <MDXContent
-          code={post.body}
-          currentUnit={currentUnit}
-          totalUnits={5}
-          slug={slug}
-        />
-      </article>
+        <article className="py-6 prose dark:prose-invert max-w-3xl ">
+          <h1 className="mb-2">{post.title}</h1>
+          <div className="flex gap-2 mb-2">
+            {post.tags?.map((tag) => (
+              <Tag tag={tag} key={tag} />
+            ))}
+          </div>
+          {post.description && (
+            <p className="text-xl mt-0 text-muted-foreground">
+              {post.description}
+            </p>
+          )}
+          <hr className="my-4" />
+          <MDXContent
+            code={post.body}
+            currentUnit={currentUnit}
+            totalUnits={5}
+            slug={slug}
+            />
+        </article>
+        <div className="flex-[1]">anme</div>
+
+          </div>
     </>
   );
 }
